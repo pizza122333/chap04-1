@@ -1,0 +1,45 @@
+#include <iostream>
+#include "opencv2/opencv.hpp"
+
+using namespace std;
+using namespace cv;
+
+int main(void)
+{
+    // 0번 카메라 장치 열기
+    VideoCapture cap(0);
+
+    if (!cap.isOpened()) {
+        cerr << "Camera open failed!" << endl;
+        return -1;
+    }
+
+    // 카메라 속성 출력
+    cout << "Frame width: " << cvRound(cap.get(CAP_PROP_FRAME_WIDTH)) << endl;
+    cout << "Frame height: " << cvRound(cap.get(CAP_PROP_FRAME_HEIGHT)) << endl;
+
+    Mat frame, brightened;
+
+    while (true) {
+        cap >> frame; // 한 프레임 받아오기
+        if (frame.empty()) {
+            cerr << "Frame empty!" << endl;
+            break;
+        }
+
+        // 과제: R, G, B 값을 모두 100만큼 증가
+        // Scalar(100, 100, 100)을 더하면 BGR 각 채널에 100씩 더해집니다.
+        brightened = frame + Scalar(100, 100, 100);
+
+        // 결과 출력
+        imshow("Original Frame", frame);        // 원본 영상
+        imshow("Brightened Frame", brightened); // 결과 영상 (밝아진 영상)
+
+        // ESC 키(ASCII 27)를 누르면 종료
+        if (waitKey(10) == 27)
+            break;
+    }
+
+    destroyAllWindows(); // 모든 창 닫기
+    return 0;
+}
