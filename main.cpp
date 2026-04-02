@@ -1,0 +1,47 @@
+#include <iostream>
+#include "opencv2/opencv.hpp"
+
+using namespace std;
+using namespace cv;
+
+int main(void)
+{
+    // 1. 카메라 열기
+    VideoCapture cap(0);
+    if (!cap.isOpened()) {
+        cerr << "Camera open failed!" << endl;
+        return -1;
+    }
+
+    // 원본과 결과를 담을 별도의 Mat 객체 선언
+    Mat frame, result;
+
+    while (true) {
+        cap >> frame; // 카메라로부터 프레임 읽기
+        if (frame.empty()) break;
+
+        // 2. 원본 복사 (객체 분리)
+        // frame의 데이터를 result로 복제하여 원본에 영향을 주지 않음
+        result = frame.clone();
+
+        // 3. 처리 결과 영상에 빨간색 도형 그리기
+        // 사각형: (x,y) 50,50 부터 200,200 크기, 색상(BGR): 빨강, 두께: 3
+        rectangle(result, Rect(50, 50, 150, 150), Scalar(0, 0, 255), 3);
+
+        // 텍스트: "REC" 문구를 빨간색으로 출력
+        putText(result, "RECORDING", Point(50, 40), FONT_HERSHEY_SIMPLEX,
+            0.8, Scalar(0, 0, 255), 2);
+
+        // 4. 화면 출력
+        imshow("Original", frame);  // 깨끗한 원본 창
+        imshow("Processed", result); // 빨간색 도형이 그려진 창
+
+        // 5. 'q' 누르면 종료
+        if (waitKey(10) == 'q') {
+            break;
+        }
+    }
+
+    destroyAllWindows();
+    return 0;
+}
