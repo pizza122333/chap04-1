@@ -1,0 +1,57 @@
+#include <iostream>
+#include "opencv2/opencv.hpp"
+
+using namespace std;
+using namespace cv;
+
+int main(void)
+{
+    // 1. 카메라 열기
+    VideoCapture cap(0);
+    if (!cap.isOpened()) {
+        cerr << "Camera open failed!" << endl;
+        return -1;
+    }
+
+    Mat frame;
+    int count = 0; // 파일 번호를 저장할 변수
+
+    cout << "프로그램 시작: " << endl;
+    cout << " - q 또는 Q: 프로그램 종료" << endl;
+    cout << " - s 또는 S: 현재 프레임 저장" << endl;
+
+    // 2. 무한 루프
+    while (true) {
+        cap >> frame;
+        if (frame.empty()) break;
+
+        // 화면 출력
+        imshow("Camera Frame", frame);
+
+        // 키 입력 대기
+        int key = waitKey(10);
+
+        // 3. 종료 조건 (Q 또는 q)
+        if (key == 'q' || key == 'Q') {
+            break;
+        }
+
+        // 4. 사진 저장 조건 (S 또는 s)
+        else if (key == 's' || key == 'S') {
+            // format 함수를 사용하여 파일명 생성 (02d는 두 자리 숫자로 맞춤)
+            String filename = format("frame%02d.jpg", count++);
+
+            bool isSaved = imwrite(filename, frame);
+
+            if (isSaved) {
+                cout << filename << " 저장 완료!" << endl;
+            }
+            else {
+                cerr << "파일 저장 실패!" << endl;
+            }
+        }
+    }
+
+    destroyAllWindows();
+    return 0;
+}
